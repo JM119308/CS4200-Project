@@ -1,0 +1,39 @@
+# do_divide function (continued)
+do_divide:
+# Initialize quotient and remainder registers
+li a0, 0
+li a1, 0
+# save the two integers
+move t2, a2
+move t3, t0
+# Initialize loop counter
+li t4, 32
+# Loop to divide
+divide_loop:
+# Shift left the remainder
+sll a1, a1, 1
+and t5, t2, 0x8000_0000
+# Append most significant bit
+or a1, a1, t5
+# Shift the dividend left
+sll t2, t2, 1
+# Subtract the divisor from the remainder
+jal do_subtract
+# Update the remainder
+move a1, a0
+divide_update_quotient:
+# Shift the quotient left
+sll a0, a0, 1
+# Set the least significant bit of the quotient
+ori a0, a0, 1
+# Decrement loop counter
+subi t4, t4, 1
+# Check for end of loop
+bnez t4, divide_loop
+done_divide:
+# Restore registers and return
+jr ra
+exit:
+li a0, 0
+li a7, __NR_EXIT
+ecall
